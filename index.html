@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎮 Arcade Game Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="container">
+        <header class="header">
+            <div class="logo-wrapper">
+                <div class="logo-glow"></div>
+                <h1 class="logo">🕹️ ARCADE HUB</h1>
+            </div>
+            <p class="tagline">Chọn trò chơi yêu thích của bạn</p>
+        </header>
+
+        <div class="games-grid" id="gamesGrid">
+
+            <!-- Snake Game -->
+            <div class="game-card" onclick="launchGame('snake')" data-game="snake">
+                <div class="card-glow"></div>
+                <div class="card-inner">
+                    <div class="game-icon">🐍</div>
+                    <div class="game-badge">HOT</div>
+                    <h2 class="game-title">Rắn Săn Mồi</h2>
+                    <p class="game-desc">Điều khiển con rắn ăn mồi và lớn dần mà không tự cắn đuôi</p>
+                    <div class="game-meta">
+                        <span class="difficulty easy">Dễ → Khó</span>
+                        <span class="players">👤 1 Người</span>
+                    </div>
+                    <div class="stars-rating">
+                        <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+                    </div>
+                    <button class="play-btn">
+                        <span class="play-icon">▶</span> CHƠI NGAY
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tetris (Coming Soon) -->
+            <div class="game-card coming-soon" data-game="tetris">
+                <div class="card-inner">
+                    <div class="game-icon">🧱</div>
+                    <div class="game-badge soon">SẮP RA</div>
+                    <h2 class="game-title">Tetris</h2>
+                    <p class="game-desc">Xếp các khối hình học sao cho đầy hàng để ghi điểm cao nhất</p>
+                    <div class="game-meta">
+                        <span class="difficulty medium">Trung Bình</span>
+                        <span class="players">👤 1 Người</span>
+                    </div>
+                    <div class="stars-rating muted">
+                        <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span>
+                    </div>
+                    <button class="play-btn disabled">🔒 SẮP RA MẮT</button>
+                </div>
+            </div>
+
+            <!-- Flappy Bird (Coming Soon) -->
+            <div class="game-card coming-soon" data-game="flappy">
+                <div class="card-inner">
+                    <div class="game-icon">🐦</div>
+                    <div class="game-badge soon">SẮP RA</div>
+                    <h2 class="game-title">Flappy Bird</h2>
+                    <p class="game-desc">Điều khiển chú chim bay qua các ống nước mà không va chạm</p>
+                    <div class="game-meta">
+                        <span class="difficulty hard">Khó</span>
+                        <span class="players">👤 1 Người</span>
+                    </div>
+                    <div class="stars-rating muted">
+                        <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span>
+                    </div>
+                    <button class="play-btn disabled">🔒 SẮP RA MẮT</button>
+                </div>
+            </div>
+
+            <!-- Pong (Coming Soon) -->
+            <div class="game-card coming-soon" data-game="pong">
+                <div class="card-inner">
+                    <div class="game-icon">🏓</div>
+                    <div class="game-badge soon">SẮP RA</div>
+                    <h2 class="game-title">Pong</h2>
+                    <p class="game-desc">Đánh bóng qua lại với đối thủ, ai để lỡ bóng trước sẽ thua</p>
+                    <div class="game-meta">
+                        <span class="difficulty easy">Dễ</span>
+                        <span class="players">👥 2 Người</span>
+                    </div>
+                    <div class="stars-rating muted">
+                        <span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span><span>☆</span>
+                    </div>
+                    <button class="play-btn disabled">🔒 SẮP RA MẮT</button>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="footer">
+            <p>🎮 Arcade Hub © 2026 · Được tạo bởi <strong>AI</strong></p>
+        </footer>
+    </div>
+
+    <script>
+        // Create floating stars background
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.width = star.style.height = (Math.random() * 3 + 1) + 'px';
+            starsContainer.appendChild(star);
+        }
+
+        function launchGame(game) {
+            if (game === 'snake') {
+                window.location.href = 'snake/index.html';
+            }
+        }
+
+        // Card hover effect with mouse tracking
+        document.querySelectorAll('.game-card:not(.coming-soon)').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20;
+                const y = ((e.clientY - rect.top) / rect.height - 0.5) * -20;
+                card.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${y}deg) translateY(-8px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>🐍 Rắn Săn Mồi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="snake.css" />
+</head>
+
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="snake-app">
+
+        <!-- ── Header ── -->
+        <header class="snake-header">
+            <a href="../index.html" class="back-btn">← MENU</a>
+            <h1 class="snake-title">🐍 RẮN SĂN MỒI</h1>
+            <div class="score-panel">
+                <div class="score-box">
+                    <span class="score-label">ĐIỂM</span>
+                    <span class="score-value" id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="score-label">CAO NHẤT</span>
+                    <span class="score-value best" id="highScore">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="score-label">CẤP ĐỘ</span>
+                    <span class="score-value level" id="level">1</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Game Area ── -->
+        <main class="game-area">
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="500" height="500"></canvas>
+
+                <!-- Start Overlay -->
+                <div class="overlay" id="overlayStart">
+                    <div class="overlay-card">
+                        <div class="overlay-icon">🐍</div>
+                        <h2>RẮN SĂN MỒI</h2>
+                        <p>Điều khiển rắn ăn mồi và lớn dần<br>Tránh va vào tường và đuôi của mình!</p>
+                        <div class="controls-hint" id="keyboardHint">
+                            <div class="hint-row"><span class="key">↑↓←→</span><span>hoặc</span><span
+                                    class="key">WASD</span><span>Di chuyển</span></div>
+                            <div class="hint-row"><span class="key">P</span><span>Tạm dừng</span></div>
+                        </div>
+                        <div class="controls-hint mobile-hint hidden" id="touchHint">
+                            <div class="hint-row">🕹️ <span>Kéo joystick để di chuyển rắn</span></div>
+                        </div>
+                        <button class="action-btn" id="startBtn">▶ BẮT ĐẦU</button>
+                    </div>
+                </div>
+
+                <!-- Pause Overlay -->
+                <div class="overlay hidden" id="overlayPause">
+                    <div class="overlay-card">
+                        <div class="overlay-icon">⏸</div>
+                        <h2>TẠM DỪNG</h2>
+                        <p>Trò chơi đang tạm dừng</p>
+                        <button class="action-btn" id="resumeBtn">▶ TIẾP TỤC</button>
+                        <button class="action-btn secondary" id="restartFromPause">↺ CHƠI LẠI</button>
+                    </div>
+                </div>
+
+                <!-- Game Over Overlay -->
+                <div class="overlay hidden" id="overlayGameOver">
+                    <div class="overlay-card">
+                        <div class="overlay-icon gameover">💥</div>
+                        <h2>GAME OVER!</h2>
+                        <p id="finalScore">Điểm của bạn: 0</p>
+                        <p id="newRecord" class="new-record hidden">🏆 Kỷ lục mới!</p>
+                        <button class="action-btn" id="restartBtn">↺ CHƠI LẠI</button>
+                        <a href="index.html" class="action-btn secondary">🏠 MENU</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Mobile Joystick ── -->
+            <div class="joystick-zone" id="joystickZone">
+                <div class="joystick-base" id="joystickBase">
+                    <div class="joystick-ring"></div>
+                    <div class="joystick-knob" id="joystickKnob">
+                        <div class="knob-dot"></div>
+                    </div>
+                    <!-- Direction arrows hint -->
+                    <span class="joy-arrow joy-up">▲</span>
+                    <span class="joy-arrow joy-down">▼</span>
+                    <span class="joy-arrow joy-left">◄</span>
+                    <span class="joy-arrow joy-right">►</span>
+                </div>
+
+                <!-- Pause button beside joystick on mobile -->
+                <button class="joy-pause-btn" id="joyPauseBtn">⏸</button>
+            </div>
+
+        </main>
+
+        <!-- ── Desktop keyboard hint ── -->
+        <footer class="snake-footer" id="desktopFooter">
+            <p>
+                <span class="ctrl-key">↑↓←→</span> hoặc <span class="ctrl-key">WASD</span> Di chuyển &nbsp;|&nbsp;
+                <span class="ctrl-key">P</span> Tạm dừng &nbsp;|&nbsp;
+                <span class="ctrl-key">Space</span> Bắt đầu / Tiếp tục
+            </p>
+        </footer>
+    </div>
+
+    <script src="snake.js"></script>
+</body>
+
+</html>
