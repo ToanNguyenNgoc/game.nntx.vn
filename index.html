@@ -88,21 +88,24 @@
                 </div>
             </div>
 
-            <!-- Pong (Coming Soon) -->
-            <div class="game-card coming-soon" data-game="pong">
+            <!-- Temple Run -->
+            <div class="game-card" onclick="launchGame('temple')" data-game="temple">
+                <div class="card-glow"></div>
                 <div class="card-inner">
-                    <div class="game-icon">🏓</div>
-                    <div class="game-badge soon">SẮP RA</div>
-                    <h2 class="game-title">Pong</h2>
-                    <p class="game-desc">Đánh bóng qua lại với đối thủ, ai để lỡ bóng trước sẽ thua</p>
+                    <div class="game-icon">🏃</div>
+                    <div class="game-badge">HOT</div>
+                    <h2 class="game-title">Temple Run</h2>
+                    <p class="game-desc">Chạy thoát khỏi ngôi đền cổ, tránh bẫy và thu thập vàng</p>
                     <div class="game-meta">
-                        <span class="difficulty easy">Dễ</span>
-                        <span class="players">👥 2 Người</span>
+                        <span class="difficulty normal">Vừa</span>
+                        <span class="players">👤 1 Người</span>
                     </div>
-                    <div class="stars-rating muted">
-                        <span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span><span>☆</span>
+                    <div class="stars-rating">
+                        <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
                     </div>
-                    <button class="play-btn disabled">🔒 SẮP RA MẮT</button>
+                    <button class="play-btn">
+                        <span class="play-icon">▶</span> CHƠI NGAY
+                    </button>
                 </div>
             </div>
 
@@ -131,6 +134,7 @@
             if (game === 'snake') window.location.href = 'snake/index.html';
             if (game === 'tetris') window.location.href = 'tetris/index.html';
             if (game === 'flappy') window.location.href = 'flappy/index.html';
+            if (game === 'temple') window.location.href = 'temple/index.html';
         }
 
         // Card hover effect with mouse tracking

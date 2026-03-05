@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>🏃 Temple Run</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="temple.css" />
+</head>
+
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="temple-app">
+
+        <!-- Header -->
+        <header class="tr-header">
+            <a href="../index.html" class="back-btn">← MENU</a>
+            <h1 class="tr-title">🏃 TEMPLE RUN</h1>
+            <div class="score-panel">
+                <div class="score-box">
+                    <span class="s-label">ĐIỂM</span>
+                    <span class="s-val" id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="s-label">CAO NHẤT</span>
+                    <span class="s-val best" id="highScore">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Canvas -->
+        <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="gameCanvas"></canvas>
+
+            <!-- Start overlay -->
+            <div class="overlay" id="overlayStart">
+                <div class="o-card">
+                    <div class="o-icon">🏃</div>
+                    <h2>TEMPLE RUN</h2>
+                    <p>Chạy trốn khỏi đền nguyền rủa!<br>Tránh chướng ngại vật, nhặt tiền vàng.</p>
+                    <div class="hint-box" id="keyHint">
+                        <div class="hint-row"><span class="key">← →</span><span>Đổi làn</span></div>
+                        <div class="hint-row"><span class="key">↑ / Space</span><span>Nhảy</span></div>
+                        <div class="hint-row"><span class="key">↓ / Shift</span><span>Trượt</span></div>
+                    </div>
+                    <div class="hint-box hidden" id="touchHint">
+                        <div class="hint-row">👆 <span>Vuốt trái/phải → đổi làn</span></div>
+                        <div class="hint-row">👆 <span>Vuốt lên → nhảy</span></div>
+                        <div class="hint-row">👆 <span>Vuốt xuống → trượt</span></div>
+                    </div>
+                    <button class="action-btn" id="startBtn">▶ BẮT ĐẦU</button>
+                </div>
+            </div>
+
+            <!-- Game Over overlay -->
+            <div class="overlay hidden" id="overlayGameOver">
+                <div class="o-card">
+                    <div class="o-icon go">💥</div>
+                    <h2>GAME OVER!</h2>
+                    <p id="finalScore">Điểm: 0</p>
+                    <p id="newRecord" class="new-record hidden">🏆 Kỷ lục mới!</p>
+                    <button class="action-btn" id="restartBtn">↺ CHƠI LẠI</button>
+                    <a href="../index.html" class="action-btn secondary">🏠 MENU</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile hints -->
+        <div class="mobile-hint" id="mobileHint">← Vuốt để đổi làn • ↑↓ để nhảy/trượt →</div>
+        <div class="desktop-hint" id="desktopHint">
+            <span class="k">←→</span> Làn &nbsp;|&nbsp;
+            <span class="k">↑/Space</span> Nhảy &nbsp;|&nbsp;
+            <span class="k">↓/Shift</span> Trượt
+        </div>
+    </div>
+
+    <script src="temple.js"></script>
+</body>
+
+</html>
