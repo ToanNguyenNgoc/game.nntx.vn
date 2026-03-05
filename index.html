@@ -46,21 +46,24 @@
                 </div>
             </div>
 
-            <!-- Tetris (Coming Soon) -->
-            <div class="game-card coming-soon" data-game="tetris">
+            <!-- Tetris -->
+            <div class="game-card" onclick="launchGame('tetris')" data-game="tetris">
+                <div class="card-glow"></div>
                 <div class="card-inner">
                     <div class="game-icon">🧱</div>
-                    <div class="game-badge soon">SẮP RA</div>
+                    <div class="game-badge">NEW</div>
                     <h2 class="game-title">Tetris</h2>
                     <p class="game-desc">Xếp các khối hình học sao cho đầy hàng để ghi điểm cao nhất</p>
                     <div class="game-meta">
                         <span class="difficulty medium">Trung Bình</span>
                         <span class="players">👤 1 Người</span>
                     </div>
-                    <div class="stars-rating muted">
+                    <div class="stars-rating">
                         <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span>
                     </div>
-                    <button class="play-btn disabled">🔒 SẮP RA MẮT</button>
+                    <button class="play-btn">
+                        <span class="play-icon">▶</span> CHƠI NGAY
+                    </button>
                 </div>
             </div>
 
@@ -122,9 +125,8 @@
         }
 
         function launchGame(game) {
-            if (game === 'snake') {
-                window.location.href = 'snake/index.html';
-            }
+            if (game === 'snake') window.location.href = 'snake/index.html';
+            if (game === 'tetris') window.location.href = 'tetris/index.html';
         }
 
         // Card hover effect with mouse tracking

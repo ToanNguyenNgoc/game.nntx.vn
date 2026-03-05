@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>🧱 Tetris – Xếp Gạch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="tetris.css" />
+</head>
+
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="tetris-app">
+
+        <!-- ── Header ── -->
+        <header class="t-header">
+            <a href="../index.html" class="back-btn">← MENU</a>
+            <h1 class="t-title">🧱 TETRIS</h1>
+            <div class="score-panel">
+                <div class="score-box">
+                    <span class="s-label">ĐIỂM</span>
+                    <span class="s-val" id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="s-label">CAO NHẤT</span>
+                    <span class="s-val best" id="highScore">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="s-label">CẤP ĐỘ</span>
+                    <span class="s-val level" id="level">1</span>
+                </div>
+                <div class="score-box">
+                    <span class="s-label">HÀNG</span>
+                    <span class="s-val lines" id="lines">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Game Layout ── -->
+        <main class="game-layout">
+
+            <!-- Side panel: Next piece + hold -->
+            <aside class="side-panel left-panel">
+                <div class="panel-box">
+                    <div class="panel-label">TIẾP</div>
+                    <canvas id="nextCanvas" width="120" height="120"></canvas>
+                </div>
+                <div class="panel-box">
+                    <div class="panel-label">GIỮ</div>
+                    <canvas id="holdCanvas" width="120" height="120"></canvas>
+                </div>
+            </aside>
+
+            <!-- Main board -->
+            <div class="board-wrapper">
+                <canvas id="gameCanvas" width="300" height="600"></canvas>
+
+                <!-- Overlays -->
+                <div class="overlay" id="overlayStart">
+                    <div class="overlay-card">
+                        <div class="o-icon">🧱</div>
+                        <h2>TETRIS</h2>
+                        <p>Xếp các khối để hoàn thành hàng ngang và ghi điểm!</p>
+                        <div class="hint-box" id="keyHint">
+                            <div class="hint-row"><span class="key">←→</span><span>Di chuyển</span></div>
+                            <div class="hint-row"><span class="key">↑ / X</span><span>Xoay phải</span></div>
+                            <div class="hint-row"><span class="key">Z</span><span>Xoay trái</span></div>
+                            <div class="hint-row"><span class="key">↓</span><span>Rơi nhanh</span></div>
+                            <div class="hint-row"><span class="key">Space</span><span>Rơi ngay</span></div>
+                            <div class="hint-row"><span class="key">C</span><span>Giữ khối</span></div>
+                        </div>
+                        <div class="hint-box touch-hint hidden" id="touchHint">
+                            <div class="hint-row">🕹️ <span>Kéo joystick trái/phải để di chuyển</span></div>
+                            <div class="hint-row">⬇️ <span>Kéo xuống → rơi nhanh</span></div>
+                            <div class="hint-row">⬆️ <span>Kéo lên → hard drop</span></div>
+                            <div class="hint-row">👆 <span>Nhấn nút ↻ để xoay</span></div>
+                        </div>
+                        <button class="action-btn" id="startBtn">▶ BẮT ĐẦU</button>
+                    </div>
+                </div>
+
+                <div class="overlay hidden" id="overlayPause">
+                    <div class="overlay-card">
+                        <div class="o-icon">⏸</div>
+                        <h2>TẠM DỪNG</h2>
+                        <button class="action-btn" id="resumeBtn">▶ TIẾP TỤC</button>
+                        <button class="action-btn secondary" id="restartFromPause">↺ CHƠI LẠI</button>
+                    </div>
+                </div>
+
+                <div class="overlay hidden" id="overlayGameOver">
+                    <div class="overlay-card">
+                        <div class="o-icon go">💥</div>
+                        <h2>GAME OVER!</h2>
+                        <p id="finalScore">Điểm: 0</p>
+                        <p id="newRecord" class="new-record hidden">🏆 Kỷ lục mới!</p>
+                        <button class="action-btn" id="restartBtn">↺ CHƠI LẠI</button>
+                        <a href="../index.html" class="action-btn secondary">🏠 MENU</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side: hold on right for desktop feel -->
+            <aside class="side-panel right-panel">
+                <div class="panel-box">
+                    <div class="panel-label">GHOST</div>
+                    <div class="ghost-info">Khối mờ<br>= vị trí<br>hạ xuống</div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- ── Mobile controls ── -->
+        <div class="mobile-controls" id="mobileControls">
+            <!-- Joystick -->
+            <div class="joystick-wrap">
+                <div class="joystick-base" id="joystickBase">
+                    <div class="joy-ring"></div>
+                    <div class="joy-knob" id="joystickKnob">
+                        <div class="knob-dot"></div>
+                    </div>
+                    <span class="joy-arrow up">▲</span>
+                    <span class="joy-arrow down">▼</span>
+                    <span class="joy-arrow left">◄</span>
+                    <span class="joy-arrow right">►</span>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="action-btns-wrap">
+                <button class="round-btn rotate-btn" id="btnRotateR" title="Xoay phải">↻</button>
+                <button class="round-btn rotate-btn secondary-rot" id="btnRotateL" title="Xoay trái">↺</button>
+                <button class="round-btn hold-btn" id="btnHold" title="Giữ">📦</button>
+                <button class="round-btn drop-btn" id="btnDrop" title="Hard drop">⬇⬇</button>
+                <button class="round-btn pause-btn" id="btnPause" title="Tạm dừng">⏸</button>
+            </div>
+        </div>
+
+        <!-- Desktop footer -->
+        <footer class="t-footer" id="desktopFooter">
+            <span class="k">←→</span> Di chuyển &nbsp;|&nbsp;
+            <span class="k">↑/X</span> Xoay &nbsp;|&nbsp;
+            <span class="k">↓</span> Nhanh &nbsp;|&nbsp;
+            <span class="k">Space</span> Drop &nbsp;|&nbsp;
+            <span class="k">C</span> Giữ &nbsp;|&nbsp;
+            <span class="k">P</span> Dừng
+        </footer>
+    </div>
+
+    <script src="tetris.js"></script>
+</body>
+
+</html>
