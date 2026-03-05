@@ -62,9 +62,12 @@ body {
     display: flex;
     flex-direction: column;
     height: 100dvh;
-    /* dynamic viewport height for mobile */
+    /* dvh accounts for mobile browser chrome */
     height: 100vh;
+    /* fallback */
     padding: 0 16px 6px;
+    overflow: hidden;
+    /* prevent children from overflowing */
 }
 
 /* ===== HEADER ===== */
@@ -154,6 +157,8 @@ body {
     justify-content: flex-start;
     gap: 14px;
     min-height: 0;
+    /* CRITICAL: allows flex child to shrink below content size */
+    overflow: hidden;
 }
 
 .canvas-wrapper {
@@ -161,6 +166,8 @@ body {
     border-radius: 14px;
     overflow: hidden;
     flex-shrink: 0;
+    max-height: 100%;
+    /* never grow beyond game-area */
     box-shadow:
         0 0 0 2px rgba(0, 255, 136, 0.2),
         0 0 35px rgba(0, 255, 136, 0.12),
@@ -170,7 +177,9 @@ body {
 #gameCanvas {
     display: block;
     background: #050510;
-    /* Canvas size is clamped via JS on mobile */
+    max-height: 100%;
+    /* scale down inside canvas-wrapper if needed */
+    width: auto;
 }
 
 /* ===== OVERLAYS ===== */
@@ -347,11 +356,11 @@ body {
 /* ===== JOYSTICK ZONE ===== */
 .joystick-zone {
     display: none;
-    /* hidden on desktop */
     align-items: center;
     justify-content: center;
     gap: 24px;
     flex-shrink: 0;
+    /* NEVER shrink — always fully visible */
     padding: 4px 0 2px;
     user-select: none;
     -webkit-user-select: none;
@@ -514,7 +523,8 @@ body {
         width: 100%;
         justify-content: space-between;
         align-items: center;
-        padding: 32px;
+        padding: 8px 16px;
+        /* reduced from 32px — was eating too much space */
     }
 
     .snake-footer {
@@ -541,6 +551,14 @@ body {
 
     .score-value {
         font-size: 1rem;
+    }
+
+    /* Constrain canvas so joystick always fits below */
+    .canvas-wrapper {
+        /* header ~75px + joystick-zone ~160px + gaps ~24px */
+        max-height: calc(100dvh - 75px - 160px - 24px);
+        max-height: calc(100vh - 75px - 160px - 24px);
+        /* fallback */
     }
 }
 

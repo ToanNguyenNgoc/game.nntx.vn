@@ -67,21 +67,24 @@
                 </div>
             </div>
 
-            <!-- Flappy Bird (Coming Soon) -->
-            <div class="game-card coming-soon" data-game="flappy">
+            <!-- Flappy Bird -->
+            <div class="game-card" onclick="launchGame('flappy')" data-game="flappy">
+                <div class="card-glow"></div>
                 <div class="card-inner">
                     <div class="game-icon">🐦</div>
-                    <div class="game-badge soon">SẮP RA</div>
+                    <div class="game-badge">NEW</div>
                     <h2 class="game-title">Flappy Bird</h2>
-                    <p class="game-desc">Điều khiển chú chim bay qua các ống nước mà không va chạm</p>
+                    <p class="game-desc">Điều khiển chú chim bay qua các cột mà không va chạm</p>
                     <div class="game-meta">
                         <span class="difficulty hard">Khó</span>
                         <span class="players">👤 1 Người</span>
                     </div>
-                    <div class="stars-rating muted">
+                    <div class="stars-rating">
                         <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>☆</span>
                     </div>
-                    <button class="play-btn disabled">🔒 SẮP RA MẮT</button>
+                    <button class="play-btn">
+                        <span class="play-icon">▶</span> CHƠI NGAY
+                    </button>
                 </div>
             </div>
 
@@ -127,6 +130,7 @@
         function launchGame(game) {
             if (game === 'snake') window.location.href = 'snake/index.html';
             if (game === 'tetris') window.location.href = 'tetris/index.html';
+            if (game === 'flappy') window.location.href = 'flappy/index.html';
         }
 
         // Card hover effect with mouse tracking

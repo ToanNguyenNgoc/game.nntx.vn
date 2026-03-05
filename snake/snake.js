@@ -8,29 +8,38 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // ── Dynamic canvas size for mobile ────────────────────
-function calcCanvasSize() {
-  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 600;
-  if (isMobile) {
-    // Available height = viewport - header(~70px) - joystick(~180px) - gaps(~30px)
-    const isLandscape = window.innerWidth > window.innerHeight;
-    const joyH = isLandscape ? 140 : 180;
-    const headerH = isLandscape ? 50 : 72;
-    const maxByHeight = window.innerHeight - headerH - joyH - 24;
-    const maxByWidth = window.innerWidth - 20;
-    const size = Math.max(200, Math.min(maxByHeight, maxByWidth, 480));
-    return Math.floor(size / 25) * 25; // snap to grid multiple
-  }
-  return 500; // desktop
-}
-
 function applyCanvasSize() {
-  const size = calcCanvasSize();
-  canvas.style.width = size + 'px';
-  canvas.style.height = size + 'px';
+  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 600;
+  if (!isMobile) {
+    canvas.style.width = '';
+    canvas.style.height = '';
+    return;
+  }
+
+  // Measure actual DOM elements after layout
+  const headerEl = document.querySelector('.snake-header');
+  const joyEl = document.getElementById('joystickZone');
+
+  const headerH = (headerEl ? headerEl.offsetHeight : 72) + 10;
+  // joystick zone: measure if visible, else use safe estimate
+  const joyH = (joyEl && joyEl.offsetHeight > 0 ? joyEl.offsetHeight : 150) + 16;
+  const paddingH = 28;
+
+  const vph = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const vpw = window.innerWidth;
+
+  const avail = vph - headerH - joyH - paddingH;
+  const size = Math.max(200, Math.min(avail, vpw - 20, 480));
+  const snapped = Math.floor(size / 25) * 25;  // snap to grid multiple
+
+  canvas.style.width = snapped + 'px';
+  canvas.style.height = snapped + 'px';
 }
 
 applyCanvasSize();
+window.addEventListener('load', () => setTimeout(applyCanvasSize, 50));
 window.addEventListener('resize', applyCanvasSize);
+
 
 const COLS = 25;
 const ROWS = 25;

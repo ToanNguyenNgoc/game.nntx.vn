@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>🐦 Flappy Bird</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="flappy.css" />
+</head>
+
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="flappy-app">
+
+        <!-- Header -->
+        <header class="f-header">
+            <a href="../index.html" class="back-btn">← MENU</a>
+            <h1 class="f-title">🐦 FLAPPY BIRD</h1>
+            <div class="score-panel">
+                <div class="score-box">
+                    <span class="s-label">ĐIỂM</span>
+                    <span class="s-val" id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="s-label">CAO NHẤT</span>
+                    <span class="s-val best" id="highScore">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Canvas -->
+        <div class="canvas-wrap">
+            <canvas id="gameCanvas"></canvas>
+
+            <!-- Start overlay -->
+            <div class="overlay" id="overlayStart">
+                <div class="o-card">
+                    <div class="o-icon">🐦</div>
+                    <h2>FLAPPY BIRD</h2>
+                    <p>Bay qua các cột mà không va chạm!<br>Mỗi cột qua được = 1 điểm</p>
+                    <div class="hint-box" id="keyHint">
+                        <div class="hint-row"><span class="key">Space / ↑ / Click</span><span>Vỗ cánh</span></div>
+                    </div>
+                    <div class="hint-box hidden" id="touchHint">
+                        <div class="hint-row">👆 <span>Chạm màn hình để vỗ cánh</span></div>
+                    </div>
+                    <button class="action-btn" id="startBtn">▶ BẮT ĐẦU</button>
+                </div>
+            </div>
+
+            <!-- Game Over overlay -->
+            <div class="overlay hidden" id="overlayGameOver">
+                <div class="o-card">
+                    <div class="o-icon go">💥</div>
+                    <h2>GAME OVER!</h2>
+                    <p id="finalScore">Điểm: 0</p>
+                    <p id="newRecord" class="new-record hidden">🏆 Kỷ lục mới!</p>
+                    <button class="action-btn" id="restartBtn">↺ CHƠI LẠI</button>
+                    <a href="../index.html" class="action-btn secondary">🏠 MENU</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile tap hint -->
+        <div class="tap-hint" id="tapHint">👆 Chạm / Click để vỗ cánh</div>
+        <div class="desktop-footer" id="desktopFooter">
+            <span class="k">Space</span> hoặc <span class="k">↑</span> hoặc <span class="k">Click</span> — Vỗ cánh
+        </div>
+
+    </div>
+
+    <script src="flappy.js"></script>
+</body>
+
+</html>

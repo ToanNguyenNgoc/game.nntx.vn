@@ -70,8 +70,12 @@ body {
     display: flex;
     flex-direction: column;
     height: 100dvh;
+    /* dvh = accounts for mobile browser chrome */
     height: 100vh;
+    /* fallback */
     padding: 0 12px 6px;
+    overflow: hidden;
+    /* prevent any child from overflowing */
 }
 
 /* ── Header ── */
@@ -163,6 +167,8 @@ body {
     justify-content: center;
     gap: 10px;
     min-height: 0;
+    /* CRITICAL: allows flex child to shrink below content size */
+    overflow: hidden;
     padding-top: 4px;
 }
 
@@ -219,6 +225,8 @@ body {
 .board-wrapper {
     position: relative;
     flex-shrink: 0;
+    max-height: 100%;
+    /* never exceed parent (game-layout) height */
     border-radius: 12px;
     overflow: hidden;
     box-shadow:
@@ -230,6 +238,10 @@ body {
 #gameCanvas {
     display: block;
     background: #050510;
+    max-height: 100%;
+    /* scale down if board-wrapper is constrained */
+    width: auto;
+    /* maintain 1:2 ratio */
 }
 
 /* ── Overlays ── */
@@ -408,6 +420,7 @@ body {
     justify-content: space-between;
     gap: 12px;
     flex-shrink: 0;
+    /* NEVER shrink — always fully visible */
     padding: 4px 4px 2px;
     user-select: none;
     -webkit-user-select: none;
@@ -622,6 +635,19 @@ body {
 
     .s-val {
         font-size: .85rem;
+    }
+
+    /* Constrain board so controls always fit */
+    .game-layout {
+        align-items: flex-start;
+        overflow: hidden;
+    }
+
+    .board-wrapper {
+        /* Reserve space: header ~80px + controls ~175px + paddings ~20px */
+        max-height: calc(100dvh - 80px - 175px - 24px);
+        max-height: calc(100vh - 80px - 175px - 24px);
+        /* fallback */
     }
 }
 

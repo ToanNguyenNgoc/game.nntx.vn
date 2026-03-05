@@ -23,23 +23,39 @@ const CELL = canvas.width / COLS;   // 30px
 // Resize canvas to fit available height on mobile
 function resizeCanvas() {
     const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 600;
-    if (isMobile) {
-        const isLand = window.innerWidth > window.innerHeight;
-        const ctrlH = isLand ? 130 : 160;
-        const headerH = isLand ? 46 : 70;
-        const avail = window.innerHeight - headerH - ctrlH - 20;
-        const maxW = window.innerWidth - 20;
-        const h = Math.min(avail, maxW * 2, 600);   // aspect 1:2
-        const w = h / 2;
-        canvas.style.height = Math.max(200, h) + 'px';
-        canvas.style.width = Math.max(100, w) + 'px';
-    } else {
+    if (!isMobile) {
         canvas.style.width = '';
         canvas.style.height = '';
+        return;
     }
+
+    // Measure actual heights after DOM renders
+    const headerEl = document.querySelector('.t-header');
+    const controlsEl = document.getElementById('mobileControls');
+
+    // Use measured heights + generous padding for browser chrome, safe-area, gaps
+    const headerH = (headerEl ? headerEl.offsetHeight : 80) + 10;
+    const ctrlH = (controlsEl && controlsEl.offsetHeight > 0
+        ? controlsEl.offsetHeight : 170) + 12;
+    const paddingH = 30;  // app padding + gaps
+
+    // Use visualViewport height if available (excludes mobile browser chrome)
+    const vph = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+    const vpw = window.innerWidth;
+
+    const avail = vph - headerH - ctrlH - paddingH;
+    const maxByWidth = (vpw - 24) / (300 / 600); // keep 1:2 ratio from width
+    const h = Math.max(160, Math.min(avail, maxByWidth, 580));
+    const w = h * (300 / 600); // = h/2
+
+    canvas.style.height = Math.floor(h) + 'px';
+    canvas.style.width = Math.floor(w) + 'px';
 }
 resizeCanvas();
+// Re-measure after controls become visible (CSS media query may hide them initially)
+window.addEventListener('load', () => setTimeout(resizeCanvas, 50));
 window.addEventListener('resize', resizeCanvas);
+
 
 // ── Tetrominoes ───────────────────────────────────────
 // Each piece: array of 4 rotation states; each state is a 2d array
@@ -297,12 +313,20 @@ function finishClear() {
             spawnCellParticles(c, r, color, clearRows.length);
         }
     }
-    // Remove rows (highest first to avoid index shifting)
+
+    // ── Remove rows correctly ───────────────────────────
+    // Step 1: splice ALL rows first (descending order keeps earlier indices valid).
+    //         Do NOT unshift inside this loop — that shifts indices and causes
+    //         subsequent splices to delete the wrong rows!
     const sorted = [...clearRows].sort((a, b) => b - a);
     for (const r of sorted) {
-        board.splice(r, 1);
+        board.splice(r, 1);           // remove only — no unshift here
+    }
+    // Step 2: add empty rows at the top (one per cleared row) all at once.
+    for (let i = 0; i < clearRows.length; i++) {
         board.unshift(Array(COLS).fill(0));
     }
+
     const count = clearRows.length;
     addScore(count);
     clearing = false;
@@ -311,6 +335,7 @@ function finishClear() {
     current = nextPiece();
     if (collides(current)) { endGame(); return; }
 }
+
 
 function spawnCellParticles(cx, cy, color, multiplier) {
     const px = cx * CELL + CELL / 2;
