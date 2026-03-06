@@ -401,11 +401,32 @@ function connectSocket() {
         updateConnBadge('disconnected');
     });
 
-    socket.on('room_created', ({ roomId, playerSymbol }) => {
+    // Room list (response to get_room_list)
+    socket.on('room_list', (rooms) => {
+        renderRoomList(rooms);
+    });
+
+    // Real-time broadcast when room list changes
+    socket.on('room_list_updated', (rooms) => {
+        renderRoomList(rooms);
+    });
+
+    socket.on('room_created', ({ roomId, playerSymbol, isPrivate }) => {
         state.roomId = roomId;
         state.playerSymbol = playerSymbol;
-        document.getElementById('room-id-display').textContent = roomId;
-        showScreen('waiting');
+        state.board = createBoard();
+        state.isMyTurn = false;
+        state.gameOver = false;
+
+        // Update waiting overlay
+        const wid = document.getElementById('waiting-room-id');
+        if (wid) wid.textContent = roomId;
+        const badge = document.getElementById('waiting-privacy-badge');
+        if (badge) badge.textContent = isPrivate ? '🔒 Riêng tư' : '🌐 Công khai';
+
+        showScreen('game');
+        showWaitingOverlay();
+        drawBoard();
     });
 
     socket.on('room_joined', ({ roomId, playerSymbol }) => {
@@ -415,6 +436,25 @@ function connectSocket() {
 
     socket.on('room_error', ({ message }) => {
         showToast(message, 'error');
+    });
+
+    // Joiner left → host goes back to waiting state (same game screen, show overlay)
+    socket.on('opponent_left', ({ message }) => {
+        state.board = createBoard();
+        state.gameOver = false;
+        state.winCells = [];
+        state.isMyTurn = false;
+        hideOverlay();
+        showToast(message, 'error');
+        // Re-show waiting overlay on game screen
+        showWaitingOverlay();
+        drawBoard();
+    });
+
+    // Creator left → joiner gets kicked
+    socket.on('host_left', ({ message }) => {
+        state.gameOver = true;
+        showOverlay('disconnected', null, message);
     });
 
     socket.on('game_start', ({ board, currentTurn, players }) => {
@@ -429,6 +469,7 @@ function connectSocket() {
         state.opponentName = opp ? opp.name : 'Đối thủ';
 
         state.isMyTurn = state.currentTurn === state.playerSymbol;
+        hideWaitingOverlay();  // remove waiting overlay, game starts
         showScreen('game');
         updatePlayerInfoUI();
         updateStatus();
@@ -461,6 +502,19 @@ function connectSocket() {
     });
 
     return socket;
+}
+
+function showWaitingOverlay() {
+    const ov = document.getElementById('waiting-overlay');
+    if (ov) ov.style.display = 'flex';
+    // Disable canvas clicks while waiting
+    const canvas = document.getElementById('caro-canvas');
+    if (canvas) canvas.classList.add('not-my-turn');
+}
+
+function hideWaitingOverlay() {
+    const ov = document.getElementById('waiting-overlay');
+    if (ov) ov.style.display = 'none';
 }
 
 /* ══════════════════════════════════════════════
@@ -694,12 +748,103 @@ function startAIGame(difficulty) {
 function startOnlineMode() {
     showScreen('lobby');
     connectSocket();
+    // reset to create tab
+    switchLobbyTab('create');
+}
+
+// ── Lobby tab switching ──────────────────────────────────────────────────────
+function switchLobbyTab(tab) {
+    const isCreate = tab === 'create';
+    document.getElementById('lobby-panel-create').style.display = isCreate ? '' : 'none';
+    document.getElementById('lobby-panel-list').style.display = isCreate ? 'none' : '';
+    document.getElementById('tab-create').classList.toggle('active', isCreate);
+    document.getElementById('tab-list').classList.toggle('active', !isCreate);
+    if (!isCreate) requestRoomList();
+}
+
+function toggleCustomCode() {
+    const on = document.getElementById('custom-code-toggle').checked;
+    const hint = document.getElementById('private-hint');
+    if (hint) hint.style.display = on ? '' : 'none';
+}
+
+function requestRoomList() {
+    if (state.socket) state.socket.emit('get_room_list');
+}
+
+function renderRoomList(rooms) {
+    const grid = document.getElementById('room-list-grid');
+    const empty = document.getElementById('room-list-empty');
+    const countEl = document.getElementById('room-list-count');
+    if (!grid) return;
+
+    countEl.textContent = `${rooms.length} phòng đang chờ`;
+
+    // Remove old cards (keep empty placeholder)
+    grid.querySelectorAll('.room-card').forEach(el => el.remove());
+
+    if (rooms.length === 0) {
+        empty.style.display = '';
+        return;
+    }
+    empty.style.display = 'none';
+
+    rooms.forEach(room => {
+        const card = document.createElement('div');
+        card.className = 'room-card' + (room.isPrivate ? ' room-card-private' : '');
+        const ago = timeAgo(room.createdAt);
+        const displayCode = room.isPrivate ? '🔒 ••••••' : room.roomId;
+        card.innerHTML = `
+          <div class="room-card-info">
+            <span class="room-card-icon">${room.isPrivate ? '🔒' : '🎮'}</span>
+            <div class="room-card-details">
+              <span class="room-card-creator">${escape(room.creatorName)}</span>
+              <span class="room-card-code">${displayCode}</span>
+              <span class="room-card-age">${ago}</span>
+            </div>
+          </div>
+          <button class="btn-join-room ${room.isPrivate ? 'btn-join-private' : ''}" onclick="joinRoomFromList('${room.roomId}', ${room.isPrivate})">
+            ${room.isPrivate ? '🔑 NHẬP MÃ' : 'THAM GIA →'}
+          </button>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function joinRoomFromList(roomId, isPrivate) {
+    const nameInput = document.getElementById('lobby-name-join');
+    const name = nameInput?.value?.trim() || 'Người chơi';
+
+    if (isPrivate) {
+        // Prompt for room code
+        const code = prompt('🔒 Phòng này yêu cầu mã. Nhập mã phòng:');
+        if (!code) return;
+        if (code.trim().toUpperCase() !== roomId) {
+            showToast('Mã phòng không đúng!', 'error');
+            return;
+        }
+    }
+
+    state.playerName = name;
+    state.socket.emit('join_room', { roomId, playerName: name });
+}
+
+function timeAgo(dateStr) {
+    const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+    if (diff < 60) return `${diff}s trước`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}p trước`;
+    return `${Math.floor(diff / 3600)}h trước`;
+}
+
+function escape(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function createRoom() {
     const name = document.getElementById('lobby-name')?.value?.trim() || 'Người chơi';
+    const isPrivate = document.getElementById('custom-code-toggle')?.checked || false;
     state.playerName = name;
-    state.socket.emit('create_room', { playerName: name });
+    state.socket.emit('create_room', { playerName: name, isPrivate });
 }
 
 function joinRoom() {
@@ -717,7 +862,7 @@ function copyRoomId() {
         const btn = document.getElementById('copy-btn');
         if (btn) { btn.textContent = '✅ ĐÃ SAO CHÉP'; btn.classList.add('copied'); }
         showToast('Đã sao chép mã phòng!', 'success');
-        setTimeout(() => { if (btn) { btn.textContent = '📋 SAO CHÉP'; btn.classList.remove('copied'); } }, 2000);
+        setTimeout(() => { if (btn) { btn.textContent = '📋 SAO CHÉP MÃ'; btn.classList.remove('copied'); } }, 2000);
     });
 }
 
@@ -743,6 +888,17 @@ function requestRematch() {
 }
 
 function quitGame() {
+    if (state.mode === 'online' && state.socket) {
+        showConfirm(
+            'Bạn có chắc muốn rời khỏi phòng?',
+            () => _doQuit()
+        );
+    } else {
+        _doQuit();
+    }
+}
+
+function _doQuit() {
     hideOverlay();
     if (state.socket) {
         state.socket.disconnect();
@@ -752,19 +908,53 @@ function quitGame() {
     state.board = [];
     state.gameOver = false;
     state.winCells = [];
+    state.roomId = null;
     showScreen('mode');
 }
 
 function goBack() {
-    if (state.socket) {
-        state.socket.disconnect();
-        state.socket = null;
-    }
     const active = document.querySelector('.screen.active')?.id;
-    if (active === 'screen-difficulty' || active === 'screen-lobby') showScreen('mode');
-    else if (active === 'screen-waiting') { showScreen('lobby'); }
-    else if (active === 'screen-game') { showScreen('mode'); }
-    else showScreen('mode');
+    // Screens without socket involvement
+    if (active === 'screen-difficulty') { showScreen('mode'); return; }
+    if (active === 'screen-lobby') { showScreen('mode'); return; }
+
+    // Screens with socket: show confirm first
+    if (state.socket) {
+        const msg = active === 'screen-waiting'
+            ? 'Bạn có chắc muốn hủy phòng?'
+            : 'Bạn có chắc muốn rời khỏi trận?';
+        showConfirm(msg, () => {
+            if (state.socket) { state.socket.disconnect(); state.socket = null; }
+            document.getElementById('conn-badge').classList.remove('visible');
+            state.roomId = null;
+            showScreen('mode');
+        });
+    } else {
+        showScreen('mode');
+    }
+}
+
+// ── Confirm dialog (reuses existing overlay) ─────────────────────────────────
+function showConfirm(message, onConfirm) {
+    const overlay = document.getElementById('overlay');
+    const icon = document.getElementById('overlay-icon');
+    const title = document.getElementById('overlay-title');
+    const sub = document.getElementById('overlay-sub');
+    const btns = document.getElementById('overlay-btns');
+
+    overlay.classList.add('active');
+    icon.textContent = '⚠️';
+    title.textContent = 'XÁC NHẪN';
+    title.className = 'overlay-title draw';
+    sub.textContent = message;
+    btns.innerHTML = `
+      <button class="btn btn-danger" id="confirm-yes-btn">RỚI PHÒNG</button>
+      <button class="btn btn-ghost"  onclick="hideOverlay()">HỦY</button>
+    `;
+    document.getElementById('confirm-yes-btn').onclick = () => {
+        hideOverlay();
+        onConfirm();
+    };
 }
 
 /* ══════════════════════════════════════════════

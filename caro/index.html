@@ -102,47 +102,87 @@
     <section class="screen" id="screen-lobby">
       <h2>🌐 CHƠI ONLINE</h2>
 
-      <div class="lobby-panel">
+      <!-- Tab switcher -->
+      <div class="lobby-tabs">
+        <button class="lobby-tab active" id="tab-create" onclick="switchLobbyTab('create')">🏠 TẠO PHÒNG</button>
+        <button class="lobby-tab" id="tab-list" onclick="switchLobbyTab('list')">📋 DANH SÁCH PHÒNG</button>
+      </div>
+
+      <!-- TAB: Tạo phòng -->
+      <div class="lobby-panel" id="lobby-panel-create">
         <div class="input-group">
           <label>TÊN CỦA BẠN</label>
           <input id="lobby-name" type="text" placeholder="Nhập tên..." maxlength="20" value="Người chơi" />
         </div>
 
+        <!-- Custom room code toggle -->
+        <label class="toggle-row">
+          <input type="checkbox" id="custom-code-toggle" onchange="toggleCustomCode()" />
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">🔒 Phòng riêng tư (tự động tạo mã)</span>
+        </label>
+        <p id="private-hint" style="font-size:0.78rem;color:var(--text-muted);display:none">⚠️ Phòng riêng tư hiện trong
+          danh sách với biểu tượng 🔒. Người vào phải nhập đúng mã phòng.</p>
+
         <button class="btn btn-primary" id="create-room-btn" onclick="createRoom()">🏠 TẠO PHÒNG MỚI</button>
 
-        <div class="divider"><span>HOẶC</span></div>
+        <div class="divider"><span>HOẶC NHẬP MÃ PHÒNG</span></div>
 
         <div class="input-group">
           <label>MÃ PHÒNG</label>
-          <input id="join-room-id" type="text" placeholder="Nhập mã phòng (6 ký tự)..." maxlength="6"
+          <input id="join-room-id" type="text" placeholder="Nhập mã phòng..." maxlength="8"
             style="letter-spacing:4px;text-transform:uppercase" />
         </div>
-
         <button class="btn btn-danger" id="join-room-btn" onclick="joinRoom()">🚪 VÀO PHÒNG</button>
+      </div>
+
+      <!-- TAB: Danh sách phòng -->
+      <div class="lobby-panel" id="lobby-panel-list" style="display:none">
+        <div class="room-list-header">
+          <span id="room-list-count" class="room-count-badge">0 phòng đang chờ</span>
+          <button class="btn-refresh" onclick="requestRoomList()" title="Làm mới">🔄</button>
+        </div>
+        <div class="room-list-grid" id="room-list-grid">
+          <div class="room-list-empty" id="room-list-empty">
+            <span>🎮</span>
+            <p>Chưa có phòng nào đang chờ</p>
+            <p style="font-size:0.8rem;color:var(--text-muted)">Hãy là người đầu tiên tạo phòng!</p>
+          </div>
+        </div>
+
+        <div class="input-group" style="margin-top:12px">
+          <label>TÊN CỦA BẠN (khi tham gia)</label>
+          <input id="lobby-name-join" type="text" placeholder="Nhập tên..." maxlength="20" value="Người chơi" />
+        </div>
       </div>
 
       <button class="btn btn-ghost" style="max-width:200px" onclick="goBack()">← QUAY LẠI</button>
     </section>
 
-    <!-- ── SCREEN: Waiting for opponent ── -->
-    <section class="screen" id="screen-waiting">
-      <div class="room-code-display">
-        <p class="room-label">MÃ PHÒNG CỦA BẠN</p>
-        <div class="room-id" id="room-id-display">------</div>
-        <button class="copy-btn" id="copy-btn" onclick="copyRoomId()">📋 SAO CHÉP</button>
-      </div>
-
-      <div class="waiting-spinner">
-        <div class="spinner"></div>
-        <p>Đang chờ đối thủ vào phòng...</p>
-        <p style="font-size:0.8rem;color:var(--text-muted)">Chia sẻ mã phòng cho bạn bè</p>
-      </div>
-
-      <button class="btn btn-ghost" style="max-width:220px" onclick="goBack()">← HỦY / QUAY LẠI</button>
-    </section>
-
-    <!-- ── SCREEN: Game ── -->
+    <!-- ── SCREEN: Game (includes waiting overlay) ── -->
     <section class="screen" id="screen-game">
+
+      <!-- Waiting overlay (shown when host is waiting for opponent) -->
+      <div class="waiting-overlay" id="waiting-overlay" style="display:none">
+        <div class="waiting-card">
+          <div class="waiting-spinner-icon">
+            <div class="spinner"></div>
+          </div>
+          <h3>⏳ ĐANG CHỜ NGƯỜI CHƠI</h3>
+          <p class="waiting-sub">Chia sẻ mã phòng để bạn bè tham gia</p>
+
+          <div class="waiting-room-code">
+            <span class="waiting-code-label">MÃ PHÒNG</span>
+            <div class="waiting-code-value" id="waiting-room-id">------</div>
+            <div id="waiting-privacy-badge" class="room-privacy-badge">🌐 Công khai</div>
+          </div>
+
+          <div class="waiting-actions">
+            <button class="btn btn-ghost copy-btn" id="copy-btn" onclick="copyRoomId()">📋 SAO CHÉP MÃ</button>
+            <button class="btn btn-danger" onclick="goBack()">← HỦY PHÒNG</button>
+          </div>
+        </div>
+      </div>
 
       <!-- Header: Player info + Status -->
       <div class="game-header">
