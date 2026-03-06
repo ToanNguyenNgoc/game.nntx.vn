@@ -10,7 +10,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=1.0" />
 </head>
 
 <body>
@@ -224,9 +224,9 @@
   <!-- <script src="http://localhost:3000/socket.io/socket.io.js" onerror="window._socketioFailed=true"></script> -->
   <!-- LIVE -->
   <script src="https://server-game.nntx.vn/socket.io/socket.io.js" onerror="window._socketioFailed=true"></script>
-  <script src="game.js"></script>
+  <script src="game.js?v=1.0"></script>
   <script>
-    // Expose restart in game screen context
+    // Expose restart in game screen context //
     function restartCurrentGame() {
       if (window.state && window.state.mode === 'ai') restartGame();
       else if (window.state && window.state.mode === 'online') requestRematch();
