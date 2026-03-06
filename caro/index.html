@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>♟️ Cờ Caro - Arcade Hub</title>
+  <meta name="description" content="Chơi Cờ Caro (Gomoku) - 2 chế độ: Đấu với AI và Chơi Online nhiều người" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="bg-stars"></div>
+
+  <!-- Connection badge (online mode) -->
+  <div class="conn-badge" id="conn-badge">
+    <div class="conn-dot" id="conn-dot"></div>
+    <span id="conn-label">OFFLINE</span>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Win / Draw Overlay -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-card">
+      <span class="overlay-icon" id="overlay-icon">🏆</span>
+      <h2 class="overlay-title" id="overlay-title">BẠN THẮNG!</h2>
+      <p class="overlay-sub" id="overlay-sub"></p>
+      <div class="overlay-btns" id="overlay-btns"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <div class="app">
+    <header class="header">
+      <a class="back-btn" href="../index.html">← ARCADE HUB</a>
+      <h1>♟️ CỜ CARO</h1>
+      <p>Gomoku · Five in a Row · 20×20</p>
+    </header>
+
+    <!-- ── SCREEN: Mode Select ── -->
+    <section class="screen active" id="screen-mode">
+      <div class="mode-cards">
+
+        <!-- vs AI -->
+        <div class="mode-card ai" onclick="startAIMode()">
+          <span class="mode-icon">🤖</span>
+          <h2>CHƠI VỚI MÁY</h2>
+          <p>Thách thức AI thông minh với 3 mức độ khó: Dễ, Trung Bình và Khó</p>
+        </div>
+
+        <!-- Online -->
+        <div class="mode-card online" onclick="startOnlineMode()">
+          <span class="mode-icon">🌐</span>
+          <h2>CHƠI ONLINE</h2>
+          <p>Tạo phòng và mời bạn bè vào cùng thi đấu theo thời gian thực</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── SCREEN: Difficulty ── -->
+    <section class="screen" id="screen-difficulty">
+      <h2>CHỌN MỨC ĐỘ</h2>
+
+      <div class="input-group" style="width:100%;max-width:400px">
+        <label>TÊN CỦA BẠN</label>
+        <input id="ai-player-name" type="text" placeholder="Nhập tên..." maxlength="20" value="Người chơi" />
+      </div>
+
+      <div class="difficulty-cards">
+
+        <div class="diff-card easy" onclick="startAIGame('easy')" id="btn-easy">
+          <span class="diff-icon">🟢</span>
+          <h3>DỄ</h3>
+          <p>AI đánh ngẫu nhiên, phù hợp để học cách chơi</p>
+        </div>
+
+        <div class="diff-card medium" onclick="startAIGame('medium')" id="btn-medium">
+          <span class="diff-icon">🟡</span>
+          <h3>TRUNG BÌNH</h3>
+          <p>AI biết tấn công và phòng thủ ngay trước mắt</p>
+        </div>
+
+        <div class="diff-card hard" onclick="startAIGame('hard')" id="btn-hard">
+          <span class="diff-icon">🔴</span>
+          <h3>KHÓ</h3>
+          <p>AI sử dụng Minimax, rất khó để đánh bại</p>
+        </div>
+
+      </div>
+
+      <button class="btn btn-ghost" style="max-width:200px;margin-top:8px" onclick="goBack()">← QUAY LẠI</button>
+    </section>
+
+    <!-- ── SCREEN: Online Lobby ── -->
+    <section class="screen" id="screen-lobby">
+      <h2>🌐 CHƠI ONLINE</h2>
+
+      <div class="lobby-panel">
+        <div class="input-group">
+          <label>TÊN CỦA BẠN</label>
+          <input id="lobby-name" type="text" placeholder="Nhập tên..." maxlength="20" value="Người chơi" />
+        </div>
+
+        <button class="btn btn-primary" id="create-room-btn" onclick="createRoom()">🏠 TẠO PHÒNG MỚI</button>
+
+        <div class="divider"><span>HOẶC</span></div>
+
+        <div class="input-group">
+          <label>MÃ PHÒNG</label>
+          <input id="join-room-id" type="text" placeholder="Nhập mã phòng (6 ký tự)..." maxlength="6"
+            style="letter-spacing:4px;text-transform:uppercase" />
+        </div>
+
+        <button class="btn btn-danger" id="join-room-btn" onclick="joinRoom()">🚪 VÀO PHÒNG</button>
+      </div>
+
+      <button class="btn btn-ghost" style="max-width:200px" onclick="goBack()">← QUAY LẠI</button>
+    </section>
+
+    <!-- ── SCREEN: Waiting for opponent ── -->
+    <section class="screen" id="screen-waiting">
+      <div class="room-code-display">
+        <p class="room-label">MÃ PHÒNG CỦA BẠN</p>
+        <div class="room-id" id="room-id-display">------</div>
+        <button class="copy-btn" id="copy-btn" onclick="copyRoomId()">📋 SAO CHÉP</button>
+      </div>
+
+      <div class="waiting-spinner">
+        <div class="spinner"></div>
+        <p>Đang chờ đối thủ vào phòng...</p>
+        <p style="font-size:0.8rem;color:var(--text-muted)">Chia sẻ mã phòng cho bạn bè</p>
+      </div>
+
+      <button class="btn btn-ghost" style="max-width:220px" onclick="goBack()">← HỦY / QUAY LẠI</button>
+    </section>
+
+    <!-- ── SCREEN: Game ── -->
+    <section class="screen" id="screen-game">
+
+      <!-- Header: Player info + Status -->
+      <div class="game-header">
+        <div class="player-info" id="player-x">
+          <div class="player-symbol-badge x-badge">X</div>
+          <div class="player-details">
+            <span class="player-name" id="x-name">Người chơi</span>
+            <span class="player-tag" id="x-tag">NGƯỜI CHƠI</span>
+          </div>
+        </div>
+
+        <div class="status-bar" id="status-bar">VS</div>
+
+        <div class="player-info" id="player-o">
+          <div class="player-symbol-badge o-badge">O</div>
+          <div class="player-details">
+            <span class="player-name" id="o-name">AI</span>
+            <span class="player-tag" id="o-tag">MÁY TÍNH</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Board -->
+      <div class="board-container">
+        <canvas id="caro-canvas"></canvas>
+      </div>
+
+      <!-- Controls -->
+      <div class="game-controls">
+        <button class="ctrl-btn restart" onclick="restartCurrentGame()" id="restart-btn">🔄 CHƠI LẠI</button>
+        <button class="ctrl-btn quit" onclick="quitGame()">🏠 TRANG CHỦ</button>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- Socket.io client (loaded only when needed) -->
+  <!-- DEV -->
+  <!-- <script src="http://localhost:3000/socket.io/socket.io.js" onerror="window._socketioFailed=true"></script> -->
+  <!-- LIVE -->
+  <script src="https://server-game.nntx.vn/socket.io/socket.io.js" onerror="window._socketioFailed=true"></script>
+  <script src="game.js"></script>
+  <script>
+    // Expose restart in game screen context
+    function restartCurrentGame() {
+      if (window.state && window.state.mode === 'ai') restartGame();
+      else if (window.state && window.state.mode === 'online') requestRematch();
+    }
+  </script>
+</body>
+
+</html>

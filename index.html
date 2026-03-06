@@ -109,6 +109,28 @@
                 </div>
             </div>
 
+            <!-- Caro (Gomoku) -->
+            <div class="game-card" onclick="launchGame('caro')" data-game="caro">
+                <div class="card-glow"></div>
+                <div class="card-inner">
+                    <div class="game-icon">♟️</div>
+                    <div class="game-badge" style="background:linear-gradient(135deg,#ff4d6d,#4cc9f0)">2P/AI</div>
+                    <h2 class="game-title">Cờ Caro</h2>
+                    <p class="game-desc">Đấu Gomoku 20×20 – Chơi với AI hoặc thách đấu bạn bè Online theo thời gian thực
+                    </p>
+                    <div class="game-meta">
+                        <span class="difficulty medium">Dễ → Khó</span>
+                        <span class="players">👥 1-2 Người</span>
+                    </div>
+                    <div class="stars-rating">
+                        <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+                    </div>
+                    <button class="play-btn">
+                        <span class="play-icon">▶</span> CHƠI NGAY
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <footer class="footer">
@@ -135,6 +157,7 @@
             if (game === 'tetris') window.location.href = 'tetris/index.html';
             if (game === 'flappy') window.location.href = 'flappy/index.html';
             if (game === 'temple') window.location.href = 'temple/index.html';
+            if (game === 'caro') window.location.href = 'caro/index.html';
         }
 
         // Card hover effect with mouse tracking
